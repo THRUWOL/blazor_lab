@@ -23,9 +23,10 @@ namespace BlazorUI
 
 
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IChatService, ChatService>();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(8, 0, 32))));
+                    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(8, 0, 32))), ServiceLifetime.Transient);
 
             var app = builder.Build();
 

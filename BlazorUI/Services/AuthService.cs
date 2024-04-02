@@ -1,4 +1,5 @@
 ﻿using BlazorUI.Data;
+using BlazorUI.Models;
 
 namespace BlazorUI.Services
 {
@@ -10,14 +11,22 @@ namespace BlazorUI.Services
             _dbContext = dbContext;
         }
 
-        public Task LoginAsync(string username, string password)
+        public async Task<AccountModel> LoginAsync(string username, string password)
         {
-            throw new NotImplementedException();
+            using var db = _dbContext;
+            var account = db.Accounts.FirstOrDefault(u => u.UserName.Equals(username) && u.Password.Equals(password));
+            return account;
         }
 
-        public Task RegisterAsync(string username, string password, string avatarUrl)
+        public async Task<AccountModel> RegisterAsync(string username, string password, string avatarUrl)
         {
-            throw new NotImplementedException();
+            using var db = _dbContext;
+            db.Accounts.Add(new AccountModel { UserName = username, Password = password, AvatarUrl = avatarUrl });
+            db.SaveChanges();
+            var account = await LoginAsync(username, password);
+
+            return account;
+
         }
     }
 }
