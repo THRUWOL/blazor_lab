@@ -10,6 +10,6 @@ namespace BlazorUI.Models
         public int UserId { get; set; }
 
         public string MessageContent { get; set; }
-
+        public DateTime MessageDate { get; set; }
     }
 }
