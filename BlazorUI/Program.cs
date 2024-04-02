@@ -1,7 +1,10 @@
 using BlazorUI.Client.Pages;
 using BlazorUI.Components;
+using BlazorUI.Data;
 using BlazorUI.Hubs;
+using BlazorUI.Services;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorUI
 {
@@ -19,7 +22,10 @@ namespace BlazorUI
             builder.Services.AddSignalR();
 
 
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(8, 0, 32))));
 
             var app = builder.Build();
 
