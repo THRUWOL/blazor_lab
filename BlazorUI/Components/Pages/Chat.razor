@@ -11,221 +11,253 @@
 
 <hr />
 <style>
-    /* improved for chat text box */
-    textarea {
-        border: 1px dashed #888;
+    /* Styles for chat container */
+    #scrollbox {
+        height: 300px; /* Adjust height as needed */
+        overflow-y: auto;
+    }
+
+    /* Styles for chat messages */
+    .received {
+        background-color: #f0f0f0; /* Light gray for received messages */
+        padding: 5px;
+        margin: 5px 10px;
         border-radius: 5px;
-        width: 80%;
-        overflow: auto;
-        background: #f7f7f7
     }
-
-    /* improved for speech bubbles */
-    .received, .sent {
-        position: relative;
-        font-family: arial;
-        font-size: 1.1em;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-
-        .received:after, .sent:after {
-            content: '';
-            border: 20px solid transparent;
-            position: absolute;
-            margin-top: -30px;
-        }
 
     .sent {
-        background: #03a9f4;
+        background-color: #007bff; /* Blue for sent messages */
         color: #fff;
-        margin-left: 10%;
-        top: 50%;
-        text-align: right;
+        padding: 5px;
+        margin: 5px 10px;
+        border-radius: 5px;
     }
 
-    .received {
-        background: #4CAF50;
-        color: #fff;
-        margin-left: 10px;
-        margin-right: 10%;
-    }
-
-    .sent:after {
-        border-left-color: #03a9f4;
-        border-right: 0;
-        right: -20px;
-    }
-
-    .received:after {
-        border-right-color: #4CAF50;
-        border-left: 0;
-        left: -20px;
-    }
-
-    /* div within bubble for name */
     .user {
-        font-size: 0.8em;
         font-weight: bold;
-        color: #000;
+        margin-bottom: 3px;
     }
 
-    .btn-default{
-        border-radius: 3px;
-        background-color: #29cc;
-
-    }
     .msg {
-        /*display: inline;*/
+        word-wrap: break-word;
     }
+
+    /* Styles for error message */
+    .invalid-feedback {
+        color: red;
+        margin-top: 5px;
+    }
+
+    /* Styles for banner */
+    .alert {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.25rem;
+    }
+
+    /* Styles for input and button */
+    .input-lg {
+        width: calc(100% - 90px); /* Adjust width as needed */
+        height: 38px; /* Adjust height as needed */
+        margin-bottom: 10px;
+        padding: 6px 12px;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .btn-default {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 6px 12px;
+        font-size: 16px;
+        line-height: 1.5;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    }
+
+        .btn-default:hover {
+            color: #fff;
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+    /* Styles for disconnect button */
+    .btn-warning {
+        color: #212529;
+        background-color: #ffc107;
+        border-color: #ffc107;
+        padding: 6px 12px;
+        font-size: 16px;
+        line-height: 1.5;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    }
+
+        .btn-warning:hover {
+            color: #212529;
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+
 </style>
-@if (!_isChatting)
+@if (!_isChatting) // Проверяем, не чатит ли пользователь в данный момент
 {
+    <!-- Пользователь не чатит -->
     <p>
+        <!-- Запрос имени пользователя -->
         Ваше имя:
     </p>
 
-    <input type="text" maxlength="32" @bind="@_username" />
-    <button type="button" @onclick="@Chatting"><span class="oi oi-chat" aria-hidden="true"></span> Поговорим?</button>
-
-    // Error messages
-    @if (_message != null)
+    <input type="text" maxlength="32" @bind="@_username" /> <!-- Поле ввода для имени пользователя -->
+    <button type="button" @onclick="@Chatting"><span class="oi oi-chat" aria-hidden="true"></span> Поговорим?</button> <!-- Кнопка для начала чата -->
+    // Сообщения об ошибках
+    @if (_message != null) // Отображаем сообщение об ошибке, если оно существует
     {
         <div class="invalid-feedback">@_message</div>
+        // Отображаем сообщение об ошибке
         <small id="emailHelp" class="form-text text-muted">@_message</small>
+        // Отображаем сообщение об ошибке
     }
 }
 else
 {
-    // banner to show current user
+    <!-- Пользователь чатит -->
+    // Баннер для отображения текущего пользователя
     <div class="alert alert-secondary mt-4" role="alert">
-        <span class="oi oi-person mr-2" aria-hidden="true"></span>
-        <span>Вы подключились как <b>@_username</b></span>
-        <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Disconnect</button>
+        <span class="oi oi-person mr-2" aria-hidden="true"></span> <!-- Иконка, указывающая пользователя -->
+        <span>Вы подключились как <b>@_username</b></span> <!-- Отображаем имя пользователя -->
+        <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Отключиться</button> <!-- Кнопка для отключения -->
     </div>
-    // display messages
+    // Отображаем сообщения
     <div id="scrollbox">
-        @foreach (var item in _messages)
+        @foreach (var item in _messages) 
         {
-            @if (item.IsNotice)
+            @if (item.IsNotice) 
             {
                 <div class="alert alert-info">@item.Body</div>
+                
             }
-            else
+            else 
             {
                 <div class="@item.CSS">
-                    <div class="user">@item.Username</div>
-                    <div class="msg">@item.Body</div>
+                    <div class="user">@item.Username</div> 
+                    <div class="msg">@item.Body</div> 
                 </div>
             }
         }
-        <hr />
-        <textarea class="input-lg" placeholder="enter your comment" @bind="@_myMessage"></textarea>
-        <button class="btn btn-default" @onclick="@(() => SendAsync(_myMessage))">Send</button>
+        <hr /> 
+        <textarea class="input-lg" placeholder="введите ваш комментарий" @bind="@_myMessage"></textarea>
+        <button class="btn btn-default" @onclick="@(() => SendAsync(_myMessage))">Отправить</button>
     </div>
 }
 
 @code {
+    // Блок кода на C# для обработки функциональности чата
 
+    // Поля
+    private bool _isChatting = false; // Указывает, чатит ли пользователь в данный момент
+    private string _username = ""; // Хранит имя пользователя
+    private string _message = ""; // Хранит сообщения об ошибке или информационные сообщения
+    private string _myMessage = ""; // Хранит сообщение пользователя
+    private List<Message> _messages = new List<Message>(); // Список для хранения сообщений чата
+    private string _hubUrl; // Хранит URL хаба SignalR
+    private HubConnection _hubConnection; // Представляет соединение с хабом SignalR
 
-    private bool _isChatting = false;
+    // Методы
 
-    private string _username = "";
-    private string _message = "";
-
-    private string _myMessage = "";
-
-    private List<Message> _messages = new List<Message>();
-
-    private string _hubUrl;
-    private HubConnection _hubConnection;
-
-
+    // Инициирует сеанс чата
     public async Task Chatting()
     {
-        if (string.IsNullOrWhiteSpace(_username))
+        if (string.IsNullOrWhiteSpace(_username)) // Проверяем, не пустое ли имя пользователя
         {
-            _message = "Введите свое имя";
+            _message = "Введите свое имя"; // Устанавливаем сообщение об ошибке
             return;
-
         }
         try
         {
+            _isChatting = true; // Устанавливаем статус чата в true
+            await Task.Delay(1); // Задержка выполнения
+            _messages.Clear(); // Очищаем существующие сообщения
+            _hubConnection = new HubConnectionBuilder() // Создаем соединение с хабом SignalR
+                .WithUrl(Navigation.ToAbsoluteUri("/chathub")) // Устанавливаем URL хаба
+                .Build();
 
-            _isChatting = true;
-            await Task.Delay(1);
-            _messages.Clear();
-            _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
-            .Build();
+            _hubConnection.On<string, string>("ReceiveMessage", BroadcastMessage); // Определяем метод для обработки полученных сообщений
 
-
-            _hubConnection.On<string, string>("ReceiveMessage", BroadcastMessage);
-
-            await _hubConnection.StartAsync();
-            await SendAsync($"[N] Поприветствуем нового участника чата - {_username}");
-
-
+            await _hubConnection.StartAsync(); // Запускаем соединение с хабом SignalR
+            await SendAsync($"[N] Поприветствуем нового участника чата - {_username}"); // Отправляем приветственное сообщение
         }
-        catch (Exception ex)
+        catch (Exception ex) // Обрабатываем исключения
         {
-            _isChatting = false;
-            _message = $"Ошибка подключения к чату {ex.Message}";
-            Debug.WriteLine(ex.ToString());
+            _isChatting = false; // Устанавливаем статус чата в false
+            _message = $"Ошибка подключения к чату {ex.Message}"; // Устанавливаем сообщение об ошибке
+            Debug.WriteLine(ex.ToString()); // Логируем исключение
         }
-
-
     }
 
+    // Принимает и обрабатывает сообщения, транслируемые из хаба SignalR
     private void BroadcastMessage(string name, string message)
     {
-        bool isMine = name.Equals(_username, StringComparison.OrdinalIgnoreCase);
+        bool isMine = name.Equals(_username, StringComparison.OrdinalIgnoreCase); // Проверяем, отправлено ли сообщение текущим пользователем
 
-        _messages.Add(new Message(name, message, isMine));
-        InvokeAsync(StateHasChanged);
+        _messages.Add(new Message(name, message, isMine)); // Добавляем сообщение в список
+        InvokeAsync(StateHasChanged); // Обновляем интерфейс
     }
+
+    // Отключает пользователя от сеанса чата
     private async Task DisconnectAsync()
     {
-        if (_isChatting)
+        if (_isChatting) // Проверяем, чатит ли в данный момент пользователь
         {
-            await SendAsync($"[N] К сожалению, {_username} покинул чат..");
+            await SendAsync($"[N] К сожалению, {_username} покинул чат.."); // Отправляем сообщение об отключении
 
-            await _hubConnection.StopAsync();
-            await _hubConnection.DisposeAsync();
+            await _hubConnection.StopAsync(); // Останавливаем соединение с хабом SignalR
+            await _hubConnection.DisposeAsync(); // Освобождаем ресурсы соединения с хабом SignalR
 
-            _hubConnection = null;
-            _isChatting = false;
+            _hubConnection = null; // Устанавливаем соединение с хабом в null
+            _isChatting = false; // Устанавливаем статус чата в false
         }
     }
 
+    // Отправляет сообщение в сеанс чата через хаб SignalR
     private async Task SendAsync(string message)
     {
-        if (_isChatting && !string.IsNullOrWhiteSpace(message))
+        if (_isChatting && !string.IsNullOrWhiteSpace(message)) // Проверяем, чатит ли пользователь и не пусто ли сообщение
         {
-            await _hubConnection.SendAsync("SendMessage", _username, message);
+            await _hubConnection.SendAsync("SendMessage", _username, message); // Отправляем сообщение через хаб SignalR
 
-            _myMessage = string.Empty;
+            _myMessage = string.Empty; // Очищаем ввод пользователя
         }
     }
 
+    // Вложенный класс, представляющий сообщение чата
     private class Message
     {
+        // Свойства
         public Message(string username, string body, bool mine)
         {
-            Username = username;
-            Body = body;
-            Mine = mine;
+            Username = username; // Устанавливаем имя отправителя
+            Body = body; // Устанавливаем текст сообщения
+            Mine = mine; // Устанавливаем, отправлено ли сообщение текущим пользователем
         }
 
-        public string Username { get; set; }
-        public string Body { get; set; }
-        public bool Mine { get; set; }
+        // Свойства
+        public string Username { get; set; } // Имя отправителя
+        public string Body { get; set; } // Текст сообщения
+        public bool Mine { get; set; } // Указывает, отправлено ли сообщение текущим пользователем
 
-        public bool IsNotice => Body.StartsWith("[N]");
+        public bool IsNotice => Body.StartsWith("[N]"); // Проверяем, является ли сообщение уведомлением
 
-        public string CSS => Mine ? "sent" : "received";
+        public string CSS => Mine ? "sent" : "received"; // Устанавливаем CSS-класс в зависимости от отправителя
     }
-
-
 }
